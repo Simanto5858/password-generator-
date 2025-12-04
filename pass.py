@@ -1,0 +1,87 @@
+import tkinter as tk
+from tkinter import messagebox
+import random
+import string
+
+# Function to generate password
+def generate_password():
+    try:
+        length = int(length_entry.get())
+        if length < 4:
+            messagebox.showwarning("Warning", "Password length should be at least 4.")
+            return
+
+        category = category_var.get()
+        if category == "Letters Only":
+            characters = string.ascii_letters
+        elif category == "Numbers Only":
+            characters = string.digits
+        elif category == "Mixed (Letters + Numbers)":
+            characters = string.ascii_letters + string.digits
+        elif category == "Strong (Letters + Numbers + Symbols)":
+            characters = string.ascii_letters + string.digits + string.punctuation
+        else:
+            messagebox.showerror("Error", "Please select a valid category.")
+            return
+
+        password = ''.join(random.choice(characters) for _ in range(length))
+        result_entry.delete(0, tk.END)
+        result_entry.insert(0, password)
+    except ValueError:
+        messagebox.showerror("Error", "Please enter a valid number.")
+
+# Function to copy password to clipboard
+def copy_password():
+    password = result_entry.get()
+    if password:
+        root.clipboard_clear()
+        root.clipboard_append(password)
+        messagebox.showinfo("Copied", "Password copied to clipboard!")
+    else:
+        messagebox.showwarning("Warning", "No password to copy.")
+
+# GUI setup
+root = tk.Tk()
+root.title("🛡️ Secure Password Generator")
+root.geometry("520x300")
+root.resizable(False, False)
+root.configure(bg="#f0f4f8")
+
+# Font styles
+label_font = ("Helvetica", 12, "italic")
+entry_font = ("Helvetica", 12)
+button_font = ("Helvetica", 11, "bold")
+
+# Password Length
+tk.Label(root, text="Password Length:", font=label_font, bg="#f0f4f8").grid(row=0, column=0, pady=10, padx=10, sticky="e")
+length_entry = tk.Entry(root, font=entry_font, width=10)
+length_entry.grid(row=0, column=1, pady=10, sticky="w")
+
+# Password Category
+tk.Label(root, text="Password Category:", font=label_font, bg="#f0f4f8").grid(row=1, column=0, pady=10, padx=10, sticky="e")
+category_var = tk.StringVar(value="Strong (Letters + Numbers + Symbols)")
+category_options = [
+    "Letters Only",
+    "Numbers Only",
+    "Mixed (Letters + Numbers)",
+    "Strong (Letters + Numbers + Symbols)"
+]
+category_menu = tk.OptionMenu(root, category_var, *category_options)
+category_menu.config(font=entry_font)
+category_menu.grid(row=1, column=1, pady=10, sticky="w")
+
+# Generate Button
+generate_btn = tk.Button(root, text="Generate Password", font=button_font, bg="#4CAF50", fg="white", padx=10, pady=5, command=generate_password)
+generate_btn.grid(row=2, column=0, columnspan=2, pady=10)
+
+# Generated Password Display
+tk.Label(root, text="Generated Password:", font=label_font, bg="#f0f4f8").grid(row=3, column=0, pady=10, padx=10, sticky="e")
+result_entry = tk.Entry(root, font=entry_font, width=30, fg="#333", bg="#e8f0fe")
+result_entry.grid(row=3, column=1, pady=10, sticky="w")
+
+# Copy Button
+copy_btn = tk.Button(root, text="Copy Password", font=button_font, bg="#2196F3", fg="white", padx=10, pady=5, command=copy_password)
+copy_btn.grid(row=4, column=0, columnspan=2, pady=10)
+
+# Run the application
+root.mainloop()
